@@ -1,9 +1,15 @@
 package schemas
 
-type Author struct {
+type User struct {
 	Name    string `json:"name"`
 	Surname string `json:"surname"`
 	Email   string `json:"email"`
+}
+
+type Auth struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+	UserID   int    `json:"userID"`
 }
 
 type Article struct {

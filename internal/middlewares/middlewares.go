@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func GetArticleByID(c *gin.Context) { // TODO: Adequate response if there is
+func GetArticleByID(c *gin.Context) { // TODO: Adequate response
 	var article schemas.Article
 	id := c.Param("id")
 	fmt.Println(id)
@@ -43,7 +43,17 @@ func GetArticles(c *gin.Context) { // TODO: handle errors and adequate response
 }
 
 func EditArticle(c *gin.Context) {
-	
+	var editedArticle = &schemas.Article{}
+	database := db.ConnectToDB(config.ProjectConfig.DB)
+	if c.BindJSON(editedArticle) != nil {
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		c.Writer.WriteString("Bad entity")
+		return
+	}
+	statement := "UPDATE articles SET title = ($1), body = ($2) WHERE id = ($3)"
+	database.Exec(statement, editedArticle.Title, editedArticle.Body, editedArticle.ID)
+	c.JSON(http.StatusOK, editedArticle)
+	database.Close()
 }
 
 func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequate response
@@ -68,4 +78,17 @@ func PostArticle(c *gin.Context) { // TODO: Adequate response
 	database.QueryRow(statement, newArticle.Title, newArticle.Body).Scan(&newArticle.ID)
 	c.JSON(http.StatusOK, newArticle)
 	database.Close()
+}
+
+func RegisterUser(c *gin.Context) {
+	database := db.ConnectToDB(config.ProjectConfig.DB)
+	email := c.PostForm("login")
+	password := c.PostForm("password")
+	statement :=
+}
+
+func AuthUser(c *gin.Context) {
+	database := db.ConnectToDB(config.ProjectConfig.DB)
+	email := c.PostForm("login")
+	password := c.PostForm("password")
 }

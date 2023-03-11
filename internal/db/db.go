@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/slavajs/SimpleAPI/config"
 	"github.com/slavajs/SimpleAPI/internal/schemas"
 	"log"
+	"sync"
 )
 
 func ConnectToDB(cfg schemas.DatabaseConfig) *sql.DB {
@@ -17,4 +19,15 @@ func ConnectToDB(cfg schemas.DatabaseConfig) *sql.DB {
 	}
 	log.Print("[ConnectToDB] successfully connected to DB")
 	return db
+}
+
+var singleton sync.Once
+var myDB *sql.DB
+
+func GetDB() *sql.DB {
+	singleton.Do(func() {
+		myDB = ConnectToDB(config.ProjectConfig.DB)
+
+	})
+	return myDB
 }

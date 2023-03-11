@@ -1,20 +1,20 @@
 package schemas
 
-type User struct {
-	Name    string `json:"name"`
-	Surname string `json:"surname"`
-	Email   string `json:"email"`
-}
-
-type Auth struct {
+type UserAuthData struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
-	UserID   int    `json:"userID"`
+	UserID   int64  `json:"userID"`
 }
 
 type Article struct {
-	Title string `json:"title"`
-	Body  string `json:"body"`
-	ID    int64  `json:id`
-	//Author Author `json:"Author"`
+	Title     string `json:"title"`
+	Body      string `json:"body"`
+	ArticleID int64  `json:"articleID"`
+	AuthorID  int64  `json:"authorID"`
+}
+
+type Response[T Article | []Article | string] struct {
+	Error     string `json:"error,omitempty"`
+	ErrorCode int    `json:"errorCode,omitempty"`
+	Body      T      `json:"body,omitempty"`
 }

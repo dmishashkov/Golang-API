@@ -12,6 +12,7 @@ type DatabaseConfig struct {
 	Port     string
 	DBName   string
 }
+
 type Config struct {
 	DB  DatabaseConfig
 	JWT JWTConfig

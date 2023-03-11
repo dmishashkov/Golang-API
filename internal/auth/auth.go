@@ -1,22 +1,25 @@
 package auth
 
 import (
-	"fmt"
-	"github.com/slavajs/SimpleAPI/config"
+	//"fmt"
 	"github.com/slavajs/SimpleAPI/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+	return string(hash), err
 }
 
-func CheckPassword(password, hash string) bool {
+func CheckPassword(password, hash []byte) (bool, error) {
 	err := bcrypt.CompareHashAndPassword(hash, password)
-	return err == nil
+	return err == nil, err
 }
 
-func CheckUserExists(login string) { // TODO: this gfunc
-	database := db.ConnectToDB(config.ProjectConfig.DB)
+func CheckUserExists(login string) bool { // TODO: this func
+	database := db.GetDB()
+	statement := `SELECT EXISTS(SELECT 1 FROM "usersAuthData" WHERE login = ($1))`
+	var ans bool
+	database.QueryRow(statement, login).Scan(&ans)
+	return ans
 }

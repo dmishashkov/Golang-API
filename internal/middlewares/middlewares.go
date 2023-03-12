@@ -13,8 +13,7 @@ func CheckAuthorized(c *gin.Context) {
 	res, parsedToken := auth.VerifyToken(token)
 	if !res {
 		c.JSON(http.StatusUnauthorized, schemas.Response[string]{
-			ErrorCode: 6,
-			Error:     "Wrong JSON token",
+			Error: "Wrong JSON token",
 		})
 		c.Abort()
 		return

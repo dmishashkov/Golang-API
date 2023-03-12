@@ -14,7 +14,6 @@ type Article struct {
 }
 
 type Response[T Article | []Article | string] struct {
-	Error     string `json:"error,omitempty"`
-	ErrorCode int    `json:"errorCode,omitempty"`
-	Body      T      `json:"body,omitempty"`
+	Error string `json:"error,omitempty"`
+	Body  T      `json:"body,omitempty"`
 }

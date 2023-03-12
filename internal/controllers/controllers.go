@@ -21,7 +21,6 @@ func GetArticleByID(c *gin.Context) { // TODO: Adequate response
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusOK, schemas.Response[[]schemas.Article]{
 			"No articles found",
-			1,
 			make([]schemas.Article, 0),
 		})
 		return
@@ -50,7 +49,6 @@ func GetArticles(c *gin.Context) { // TODO: handle errors and adequate response
 	if flag {
 		c.JSON(http.StatusOK, schemas.Response[[]schemas.Article]{
 			"No articles found",
-			1,
 			make([]schemas.Article, 0),
 		})
 		return
@@ -65,39 +63,36 @@ func EditArticle(c *gin.Context) {
 	id := c.Param("id")
 	authorID, _ := c.Get("id")
 	intAuthorID := int64(authorID.(float64))
-	statement := "UPDATE articles SET title = ($1), body = ($2) WHERE id = ($3)"
 	var editedArticle = &schemas.Article{}
 	editedArticle.ArticleID = -1
 	database := db.GetDB()
 	err := c.BindJSON(editedArticle)
 	searchAuthor := `SELECT "authorID" FROM articles WHERE "articleID" = ($1)`
-	database.QueryRow(searchAuthor).Scan(&editedArticle.AuthorID)
+	errQ := database.QueryRow(searchAuthor, id).Scan(&editedArticle.AuthorID)
+	if errQ == sql.ErrNoRows {
+		c.JSON(http.StatusForbidden, schemas.Response[[]schemas.Article]{
+			Error: "Article with given id does not exist",
+		})
+		return
+	}
 	if editedArticle.AuthorID != intAuthorID {
 		c.JSON(http.StatusForbidden, schemas.Response[[]schemas.Article]{
 			"Permission denied",
-			4,
 			make([]schemas.Article, 0),
 		})
+		return
 	}
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, schemas.Response[[]schemas.Article]{
 			"Wrong entity",
-			2,
 			make([]schemas.Article, 0),
 		})
 		return
 	}
 
 	editedArticle.ArticleID, _ = strconv.ParseInt(id, 10, 64)
-	statement = "UPDATE articles SET title = ($1), body = ($2) WHERE id = ($3)"
-	res, _ := database.Exec(statement, editedArticle.Title, editedArticle.Body, editedArticle.ArticleID)
-	if ans, _ := res.RowsAffected(); ans != 1 {
-		c.JSON(http.StatusConflict, schemas.Response[string]{
-			Error:     "Article with given id does not exist",
-			ErrorCode: 5,
-		})
-		return
-	}
+	statement := `UPDATE articles SET title = ($1), body = ($2) WHERE "articleID" = ($3)`
+	database.Exec(statement, editedArticle.Title, editedArticle.Body, editedArticle.ArticleID)
 	c.JSON(http.StatusOK, schemas.Response[string]{
 		Body: "Successfully edited article",
 	})
@@ -110,24 +105,23 @@ func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequa
 	authorID, _ := c.Get("id")
 	intAuthorID := int64(authorID.(float64))
 	searchAuthor := `SELECT "authorID" FROM articles WHERE "articleID" = ($1)`
-	database.QueryRow(searchAuthor, id).Scan(&origAuthorID)
+	err := database.QueryRow(searchAuthor, id).Scan(&origAuthorID)
+	if err == sql.ErrNoRows {
+		c.JSON(http.StatusForbidden, schemas.Response[[]schemas.Article]{
+			"Article with given id does not exist",
+			make([]schemas.Article, 0),
+		})
+		return
+	}
 	if intAuthorID != origAuthorID {
 		c.JSON(http.StatusForbidden, schemas.Response[[]schemas.Article]{
 			"Permission denied",
-			4,
 			make([]schemas.Article, 0),
 		})
 		return
 	}
 	statement := `DELETE FROM articles WHERE "articleID" = ($1)`
-	res, _ := database.Exec(statement, id)
-	if ans, _ := res.RowsAffected(); ans != 1 {
-		c.JSON(http.StatusConflict, schemas.Response[string]{
-			Error:     "Article with given id does not exist",
-			ErrorCode: 5,
-		})
-		return
-	}
+	database.Exec(statement, id)
 	c.JSON(http.StatusOK, schemas.Response[string]{
 		Body: "Successfully deleted",
 	})
@@ -140,9 +134,8 @@ func PostArticle(c *gin.Context) { // TODO: Adequate response
 	var newArticle = &schemas.Article{}
 	if err := c.BindJSON(newArticle); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, schemas.Response[[]schemas.Article]{
-			ErrorCode: 3,
-			Error:     "Unprocessable entity",
-			Body:      make([]schemas.Article, 0),
+			Error: "Unprocessable entity",
+			Body:  make([]schemas.Article, 0),
 		})
 		return
 	}

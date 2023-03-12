@@ -8,7 +8,6 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/slavajs/SimpleAPI/config"
 	"github.com/slavajs/SimpleAPI/internal/schemas"
-	"log"
 	"strings"
 	"time"
 )
@@ -20,7 +19,6 @@ func GenerateToken(cfg schemas.JWTConfig, login string, id int) (string, error) 
 	claims["login"] = login
 	claims["id"] = id
 	tokenString, err := token.SignedString([]byte(cfg.SecretString))
-	log.Println(err)
 	return tokenString, err
 }
 
@@ -37,7 +35,6 @@ func VerifyCallback(cfg schemas.JWTConfig) func(*jwt.Token) (interface{}, error)
 }
 
 func VerifyToken(tokenString string) (bool, *jwt.Token) {
-	parsedToken, err := jwt.Parse(tokenString, VerifyCallback(config.ProjectConfig.JWT))
-	log.Println(err)
+	parsedToken, _ := jwt.Parse(tokenString, VerifyCallback(config.ProjectConfig.JWT))
 	return parsedToken.Valid, parsedToken
 }

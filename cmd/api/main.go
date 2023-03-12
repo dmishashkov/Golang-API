@@ -1,18 +1,16 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/slavajs/SimpleAPI/internal/controllers"
 	"github.com/slavajs/SimpleAPI/internal/middlewares"
-	"log"
 )
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-	r.Use(cors.Default())
+	//r.Use(gin.Logger())
+	//r.Use(gin.Recovery())
 	//authorized := r.Group("/")
 	r.POST("/auth/signup", controllers.RegisterUser)
 	r.POST("/auth/signin", controllers.AuthUser)
@@ -23,5 +21,4 @@ func main() {
 	r.DELETE("/article/:id", middlewares.CheckAuthorized, controllers.RemoveArticle)
 	r.GET("/test", middlewares.CheckAuthorized)
 	r.Run(":5050")
-	log.Print("[main] Successfully started server")
 }

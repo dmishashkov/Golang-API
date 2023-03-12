@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/joho/godotenv"
 	"github.com/slavajs/SimpleAPI/internal/schemas"
-	"log"
 	"os"
 	"strconv"
 )
@@ -45,14 +44,11 @@ func getIntEnv(key string, defaultVal int) int {
 
 func loadEnv() {
 	if err := godotenv.Load("../../.env"); err != nil {
-		log.Print("Error loading env variables")
 		panic(err)
 	}
-	log.Print("[loadEnv] Successfully loaded env variables")
 }
 
 func init() {
 	loadEnv()
 	ProjectConfig = createConfig()
-	log.Print("[loadEnv] Successfully created project config")
 }

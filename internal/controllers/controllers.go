@@ -7,7 +7,6 @@ import (
 	"github.com/slavajs/SimpleAPI/internal/auth"
 	"github.com/slavajs/SimpleAPI/internal/db"
 	"github.com/slavajs/SimpleAPI/internal/schemas"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -18,9 +17,7 @@ func GetArticleByID(c *gin.Context) { // TODO: Adequate response
 	database := db.GetDB()
 	statement := `SELECT * FROM articles WHERE "articleID" = ($1)`
 	row := database.QueryRow(statement, id)
-
 	err := row.Scan(&article.ArticleID, &article.Body, &article.Title, &article.AuthorID)
-	log.Println(err)
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusOK, schemas.Response[[]schemas.Article]{
 			"No articles found",
@@ -47,10 +44,7 @@ func GetArticles(c *gin.Context) { // TODO: handle errors and adequate response
 	for rows.Next() {
 		var article schemas.Article
 		flag = false
-		err := rows.Scan(&article.ArticleID, &article.Title, &article.Body, &article.AuthorID)
-		if err != nil {
-			log.Println(err)
-		}
+		rows.Scan(&article.ArticleID, &article.Title, &article.Body, &article.AuthorID)
 		articles = append(articles, article)
 	}
 	if flag {
@@ -96,8 +90,7 @@ func EditArticle(c *gin.Context) {
 
 	editedArticle.ArticleID, _ = strconv.ParseInt(id, 10, 64)
 	statement = "UPDATE articles SET title = ($1), body = ($2) WHERE id = ($3)"
-	res, err := database.Exec(statement, editedArticle.Title, editedArticle.Body, editedArticle.ArticleID)
-	log.Println(err)
+	res, _ := database.Exec(statement, editedArticle.Title, editedArticle.Body, editedArticle.ArticleID)
 	if ans, _ := res.RowsAffected(); ans != 1 {
 		c.JSON(http.StatusConflict, schemas.Response[string]{
 			Error:     "Article with given id does not exist",
@@ -117,8 +110,7 @@ func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequa
 	authorID, _ := c.Get("id")
 	intAuthorID := int64(authorID.(float64))
 	searchAuthor := `SELECT "authorID" FROM articles WHERE "articleID" = ($1)`
-	err := database.QueryRow(searchAuthor, id).Scan(&origAuthorID)
-	log.Println(err)
+	database.QueryRow(searchAuthor, id).Scan(&origAuthorID)
 	if intAuthorID != origAuthorID {
 		c.JSON(http.StatusForbidden, schemas.Response[[]schemas.Article]{
 			"Permission denied",
@@ -128,7 +120,7 @@ func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequa
 		return
 	}
 	statement := `DELETE FROM articles WHERE "articleID" = ($1)`
-	res, err := database.Exec(statement, id)
+	res, _ := database.Exec(statement, id)
 	if ans, _ := res.RowsAffected(); ans != 1 {
 		c.JSON(http.StatusConflict, schemas.Response[string]{
 			Error:     "Article with given id does not exist",
@@ -136,7 +128,6 @@ func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequa
 		})
 		return
 	}
-	log.Println(err)
 	c.JSON(http.StatusOK, schemas.Response[string]{
 		Body: "Successfully deleted",
 	})
@@ -146,7 +137,6 @@ func PostArticle(c *gin.Context) { // TODO: Adequate response
 	authorID, _ := c.Get("id")
 	intAuthorID := int64(authorID.(float64))
 	database := db.GetDB()
-	log.Println(authorID)
 	var newArticle = &schemas.Article{}
 	if err := c.BindJSON(newArticle); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, schemas.Response[[]schemas.Article]{
@@ -158,8 +148,7 @@ func PostArticle(c *gin.Context) { // TODO: Adequate response
 	}
 	newArticle.AuthorID = intAuthorID
 	statement := `INSERT INTO articles (title, body, "authorID") VALUES ($1, $2, $3) RETURNING "articleID"`
-	err := database.QueryRow(statement, newArticle.Title, newArticle.Body, newArticle.AuthorID).Scan(&newArticle.ArticleID)
-	log.Println(err)
+	database.QueryRow(statement, newArticle.Title, newArticle.Body, newArticle.AuthorID).Scan(&newArticle.ArticleID)
 	c.JSON(http.StatusOK, schemas.Response[schemas.Article]{
 		Body: *newArticle,
 	})
@@ -176,10 +165,9 @@ func RegisterUser(c *gin.Context) {
 		})
 		return
 	}
-	hashedPassword, err := auth.HashPassword(password)
+	hashedPassword, _ := auth.HashPassword(password)
 	statement := `INSERT INTO "usersAuthData" (login, password) VALUES ($1, $2) RETURNING "userID"`
-	err = database.QueryRow(statement, login, hashedPassword).Scan(&newUser.UserID) // TODO handle this
-	log.Println(err)
+	database.QueryRow(statement, login, hashedPassword).Scan(&newUser.UserID) // TODO handle this
 	c.JSON(http.StatusOK, schemas.Response[string]{
 		Body: "New user registered",
 	})

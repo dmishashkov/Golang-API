@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-func GetArticleByID(c *gin.Context) { // TODO: Adequate response
+func GetArticleByID(c *gin.Context) {
 	var article schemas.Article
 	id := c.Param("id")
 	database := db.GetDB()
@@ -32,7 +32,7 @@ func GetArticleByID(c *gin.Context) { // TODO: Adequate response
 	return
 }
 
-func GetArticles(c *gin.Context) { // TODO: handle errors and adequate response
+func GetArticles(c *gin.Context) {
 	var articles []schemas.Article
 	database := db.GetDB()
 	rows, err := database.Query("SELECT * FROM articles")
@@ -98,7 +98,7 @@ func EditArticle(c *gin.Context) {
 	})
 }
 
-func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequate response
+func RemoveArticle(c *gin.Context) {
 	var origAuthorID int64
 	database := db.GetDB()
 	id := c.Param("id")
@@ -127,7 +127,7 @@ func RemoveArticle(c *gin.Context) { // TODO: Error if there is no id and adequa
 	})
 }
 
-func PostArticle(c *gin.Context) { // TODO: Adequate response
+func PostArticle(c *gin.Context) {
 	authorID, _ := c.Get("id")
 	intAuthorID := int64(authorID.(float64))
 	database := db.GetDB()

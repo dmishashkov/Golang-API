@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/dmishashkov/SimpleAPI/internal/controllers"
+	"github.com/dmishashkov/SimpleAPI/internal/middlewares"
 	"github.com/gin-gonic/gin"
-	"github.com/slavajs/SimpleAPI/internal/controllers"
-	"github.com/slavajs/SimpleAPI/internal/middlewares"
 )
 
 func main() {

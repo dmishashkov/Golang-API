@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"github.com/dmishashkov/SimpleAPI/internal/auth"
+	"github.com/dmishashkov/SimpleAPI/internal/schemas"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/slavajs/SimpleAPI/internal/auth"
-	"github.com/slavajs/SimpleAPI/internal/schemas"
 	"net/http"
 )
 

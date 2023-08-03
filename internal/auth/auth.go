@@ -2,7 +2,7 @@ package auth
 
 import (
 	//"fmt"
-	"github.com/slavajs/SimpleAPI/internal/db"
+	"github.com/dmishashkov/SimpleAPI/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
 

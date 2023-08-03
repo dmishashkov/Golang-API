@@ -3,9 +3,9 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/dmishashkov/SimpleAPI/config"
+	"github.com/dmishashkov/SimpleAPI/internal/schemas"
 	_ "github.com/lib/pq"
-	"github.com/slavajs/SimpleAPI/config"
-	"github.com/slavajs/SimpleAPI/internal/schemas"
 	"log"
 	"sync"
 )

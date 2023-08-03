@@ -1,8 +1,8 @@
 package config
 
 import (
+	"github.com/dmishashkov/SimpleAPI/internal/schemas"
 	"github.com/joho/godotenv"
-	"github.com/slavajs/SimpleAPI/internal/schemas"
 	"os"
 	"strconv"
 )

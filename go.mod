@@ -1,4 +1,4 @@
-module github.com/slavajs/SimpleAPI
+module github.com/dmishashkov/SimpleAPI
 
 go 1.19
 

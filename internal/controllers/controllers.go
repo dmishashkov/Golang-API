@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"database/sql"
+	"github.com/dmishashkov/SimpleAPI/config"
+	"github.com/dmishashkov/SimpleAPI/internal/auth"
+	"github.com/dmishashkov/SimpleAPI/internal/db"
+	"github.com/dmishashkov/SimpleAPI/internal/schemas"
 	"github.com/gin-gonic/gin"
-	"github.com/slavajs/SimpleAPI/config"
-	"github.com/slavajs/SimpleAPI/internal/auth"
-	"github.com/slavajs/SimpleAPI/internal/db"
-	"github.com/slavajs/SimpleAPI/internal/schemas"
 	"net/http"
 	"strconv"
 )
@@ -190,6 +190,6 @@ func AuthUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusUnauthorized, schemas.Response[string]{
-		Body: "Wrong authdata",
+		Body: "Wrong auth data",
 	})
 }

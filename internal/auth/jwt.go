@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	//"errors"
 	//"github.com/gin-gonic/gin"
+	"github.com/dmishashkov/SimpleAPI/config"
+	"github.com/dmishashkov/SimpleAPI/internal/schemas"
 	"github.com/golang-jwt/jwt"
-	"github.com/slavajs/SimpleAPI/config"
-	"github.com/slavajs/SimpleAPI/internal/schemas"
 	"strings"
 	"time"
 )
